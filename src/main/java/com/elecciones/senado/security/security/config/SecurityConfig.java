@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers("/api/security/auth/**").permitAll()
+                                .requestMatchers("/api/security/doc-type/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->
