@@ -80,7 +80,7 @@ public class UserController {
         try {
             response.setData(userResponseMapper.modelToDto(updateUserUseCase.update(userUpdateMapper.dtoToModel(user))));
             return ResponseEntity.ok(response);
-        } catch (NoIdReceivedException | InvalidBodyException | NoResultsException | NoChangesException e) {
+        } catch (NoIdReceivedException | InvalidBodyException | NoResultsException | NoChangesException | DuplicatedException e) {
             response.setError(httpUtils.determineErrorMessage(e));
             return new ResponseEntity<>(response, httpUtils.determineHttpStatus(e));
         }

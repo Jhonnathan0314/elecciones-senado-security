@@ -5,10 +5,7 @@ import com.elecciones.senado.security.context.document_type.domain.port.Document
 import com.elecciones.senado.security.context.user.domain.model.User;
 import com.elecciones.senado.security.context.user.domain.port.UserRepository;
 import com.elecciones.senado.security.utils.constants.ErrorMessages;
-import com.elecciones.senado.security.utils.exceptions.InvalidBodyException;
-import com.elecciones.senado.security.utils.exceptions.NoChangesException;
-import com.elecciones.senado.security.utils.exceptions.NoIdReceivedException;
-import com.elecciones.senado.security.utils.exceptions.NoResultsException;
+import com.elecciones.senado.security.utils.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +21,7 @@ public class UpdateUserUseCase {
     private final DocumentTypeRepository documentTypeRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User update(User user) throws NoIdReceivedException, NoResultsException, NoChangesException, InvalidBodyException {
+    public User update(User user) throws NoIdReceivedException, NoResultsException, NoChangesException, InvalidBodyException, DuplicatedException {
 
         if(user.getId() == null) throw new NoIdReceivedException(errorMessages.NO_ID_RECEIVED);
 
@@ -49,6 +46,8 @@ public class UpdateUserUseCase {
         user.setDocumentType(optionalDocumentType.get());
 
         if(userDb.equals(user) && (user.getPassword() == null || user.getPassword().isEmpty())) throw new NoChangesException(errorMessages.NO_CHANGES);
+
+        if(userRepository.findByUsername(user.getUsername()).isPresent()) throw new DuplicatedException(errorMessages.DUPLICATED);
 
         if(user.getPassword() != null && !user.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
