@@ -41,6 +41,12 @@ public class SecurityConfig {
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers ->
+                        headers.contentSecurityPolicy(csp ->
+                                csp.policyDirectives("default-src 'self'; script-src 'self';")
+                        )
+                )
+
                 .build();
     }
 
